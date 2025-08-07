@@ -18,6 +18,8 @@ gem "stimulus-rails"
 gem "jbuilder"
 # Tailwind CSS for Rails
 gem "tailwindcss-rails"
+# Dry types for type safety and result objects
+gem "dry-monads", "~> 1.6"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
