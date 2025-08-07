@@ -18,14 +18,8 @@ class LogParser
     content.each_line do |line|
       next if line.strip.empty?
 
-      begin
-        process_line(line.strip)
-        lines_processed += 1
-      rescue StandardError => e
-        error_message = "Error parsing line: #{line} - #{e.message}"
-        @errors << error_message
-        next
-      end
+      process_line(line.strip)
+      lines_processed += 1
     end
 
     return Failure(:no_valid_lines) if lines_processed == 0
