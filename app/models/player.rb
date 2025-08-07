@@ -1,4 +1,7 @@
 class Player < ApplicationRecord
+  # This match_players relation here is used to cache kills or deaths player had in certain matches to not make queries such as
+  # Kill.where(match_id: 1, killer: roman).count which is not efficient on large databases
+
   has_many :match_players, dependent: :destroy
   has_many :matches, through: :match_players
   has_many :kills_as_killer, class_name: 'Kill', foreign_key: 'killer_id', dependent: :destroy
@@ -15,8 +18,7 @@ class Player < ApplicationRecord
   end
 
   def kd_ratio
-    return 0.0 if total_kills == 0 && total_deaths == 0
-    return total_kills.to_f if total_deaths == 0
+    return total_kills.to_f if total_deaths.zero?
     total_kills.to_f / total_deaths
   end
 

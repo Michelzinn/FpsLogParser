@@ -68,7 +68,7 @@ RSpec.describe Player, type: :model do
     end
 
     context 'when player has no kills or deaths' do
-      it 'returns 0' do
+      it 'returns 0.0 when no deaths' do
         expect(player.kd_ratio).to eq(0.0)
       end
     end

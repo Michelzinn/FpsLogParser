@@ -9,7 +9,7 @@ class Match < ApplicationRecord
   scope :ordered, -> { order(started_at: :desc) }
 
   def duration
-    return nil unless ended_at.present?
+    return nil if ended_at.blank?
     (ended_at - started_at).to_i
   end
 
