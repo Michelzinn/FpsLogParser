@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_07_123456) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_07_123622) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -26,6 +26,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_07_123456) do
     t.index ["killer_id"], name: "index_kills_on_killer_id"
     t.index ["match_id"], name: "index_kills_on_match_id"
     t.index ["victim_id"], name: "index_kills_on_victim_id"
+  end
+
+  create_table "match_players", force: :cascade do |t|
+    t.bigint "match_id", null: false
+    t.bigint "player_id", null: false
+    t.integer "kills_count", default: 0, null: false
+    t.integer "deaths_count", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["match_id", "player_id"], name: "index_match_players_on_match_id_and_player_id", unique: true
+    t.index ["match_id"], name: "index_match_players_on_match_id"
+    t.index ["player_id"], name: "index_match_players_on_player_id"
   end
 
   create_table "matches", force: :cascade do |t|
@@ -47,4 +59,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_07_123456) do
   add_foreign_key "kills", "matches"
   add_foreign_key "kills", "players", column: "killer_id"
   add_foreign_key "kills", "players", column: "victim_id"
+  add_foreign_key "match_players", "matches"
+  add_foreign_key "match_players", "players"
 end
