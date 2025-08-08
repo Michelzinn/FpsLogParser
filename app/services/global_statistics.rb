@@ -1,14 +1,18 @@
 class GlobalStatistics
   def global_rankings
-    Player.includes(:match_players).map do |player|
+    Player.includes(:match_players, :matches).map do |player|
+      matches_played = player.matches.count
+      matches_won = player.matches_won
+
       {
         player: player,
         name: player.name,
         total_kills: player.total_kills,
         total_deaths: player.total_deaths,
         kd_ratio: player.kd_ratio.round(2),
-        matches_played: player.matches.count,
-        matches_won: player.matches_won
+        matches_played: matches_played,
+        matches_won: matches_won,
+        win_rate: matches_played > 0 ? (matches_won.to_f / matches_played) : 0.0
       }
     end.sort_by { |stat| -stat[:total_kills] }
   end

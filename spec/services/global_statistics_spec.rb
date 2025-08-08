@@ -37,6 +37,27 @@ RSpec.describe GlobalStatistics do
       expect(roman[:kd_ratio]).to eq(3.4)
     end
 
+    it 'includes matches won and win rate' do
+      rankings = statistics.global_rankings
+      roman = rankings.find { |r| r[:name] == 'Roman' }
+      marcus = rankings.find { |r| r[:name] == 'Marcus' }
+
+      expect(roman[:matches_won]).to eq(1)
+      expect(roman[:win_rate]).to eq(0.5)
+
+      expect(marcus[:matches_won]).to eq(1)
+      expect(marcus[:win_rate]).to eq(1.0)
+    end
+
+    it 'handles players with no matches' do
+      create(:player, name: 'NewPlayer')
+      rankings = statistics.global_rankings
+      new_player = rankings.find { |r| r[:name] == 'NewPlayer' }
+
+      expect(new_player[:win_rate]).to eq(0.0)
+      expect(new_player[:matches_played]).to eq(0)
+    end
+
     it 'includes all players' do
       rankings = statistics.global_rankings
       expect(rankings.size).to eq(3)
