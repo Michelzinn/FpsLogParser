@@ -1,0 +1,23 @@
+<div class="mt-8">
+  <div class="divider">Parse Results</div>
+  <div class="stats shadow w-full">
+    <div class="stat">
+      <div class="stat-title">Lines Parsed</div>
+      <div class="stat-value text-primary"><%= processed %></div>
+      <div class="stat-desc">Successfully parsed log entries</div>
+    </div>
+  </div>
+
+  <% if has_errors? %>
+    <div class="alert alert-warning mt-4">
+      <div>
+        <h3 class="font-bold">⚠️ Parsing errors found:</h3>
+        <ul class="mt-2 space-y-1">
+          <% errors.each do |error| %>
+            <li class="text-sm"><%= error %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+</div>

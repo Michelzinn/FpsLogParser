@@ -1,0 +1,29 @@
+<div class="min-h-screen flex items-center justify-center p-4">
+  <div class="card bg-base-100 shadow-xl w-full max-w-2xl">
+    <div class="card-body">
+      <h1 class="card-title text-2xl sm:text-3xl mb-6">Active Combat Tracker</h1>
+      
+      <%= form_with url: uploads_path, html: { class: "space-y-6" } do |form| %>
+        <div class="form-control">
+          <%= form.label :log_file, class: "label" do %>
+            <span class="label-text text-base sm:text-lg">Select log file to parse</span>
+          <% end %>
+          <%= form.file_field :log_file, 
+                             accept: ".log,.txt",
+                             class: "file-input file-input-bordered file-input-primary w-full",
+                             required: true %>
+          <label class="label">
+            <span class="label-text-alt">Accepted formats: .log, .txt</span>
+          </label>
+        </div>
+
+        <div class="form-control">
+          <%= form.submit "Upload and Parse", 
+                          class: "btn btn-primary" %>
+        </div>
+      <% end %>
+
+      <%= turbo_frame_tag "results" %>
+    </div>
+  </div>
+</div>
