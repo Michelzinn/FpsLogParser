@@ -1,6 +1,7 @@
 require_relative "boot"
 
 require "rails"
+require "view_component"
 # Pick the frameworks you want:
 require "active_model/railtie"
 require "active_job/railtie"
@@ -35,6 +36,9 @@ module FpsLogParser
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    config.autoload_paths << Rails.root.join("app/components")
+    config.eager_load_paths << Rails.root.join("app/components")
 
     # Don't generate system test files.
     config.generators.system_tests = nil
