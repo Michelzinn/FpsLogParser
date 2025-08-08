@@ -35,13 +35,20 @@ class LogParser
 
     case event
     when /New match (\d+) has started/
-      handle_match_start($1, timestamp)
+      match_id = $1
+      handle_match_start(match_id, timestamp)
     when /Match (\d+) has ended/
-      handle_match_end($1, timestamp)
+      match_id = $1
+      handle_match_end(match_id, timestamp)
     when /<WORLD> killed (.+) by (.+)/
-      handle_world_kill($1, $2, timestamp)
+      victim = $1
+      weapon = $2
+      handle_world_kill(victim, weapon, timestamp)
     when /(.+) killed (.+) using (.+)/
-      handle_player_kill($1, $2, $3, timestamp)
+      killer = $1
+      victim = $2
+      weapon = $3
+      handle_player_kill(killer, victim, weapon, timestamp)
     else
       @errors << "Unknown event format: #{line}"
     end
