@@ -212,5 +212,52 @@ RSpec.describe LogParser do
         end
       end
     end
+    describe 'match validation on end' do
+      context 'when match exceeds 20 players' do
+        let(:excess_log) do
+          <<~LOG
+            23/04/2019 15:00:00 - New match 77777 has started
+            23/04/2019 15:00:01 - P1 killed P2 using M16
+            23/04/2019 15:00:02 - P3 killed P4 using M16
+            23/04/2019 15:00:03 - P5 killed P6 using M16
+            23/04/2019 15:00:04 - P7 killed P8 using M16
+            23/04/2019 15:00:05 - P9 killed P10 using M16
+            23/04/2019 15:00:06 - P11 killed P12 using M16
+            23/04/2019 15:00:07 - P13 killed P14 using M16
+            23/04/2019 15:00:08 - P15 killed P16 using M16
+            23/04/2019 15:00:09 - P17 killed P18 using M16
+            23/04/2019 15:00:10 - P19 killed P20 using M16
+            23/04/2019 15:00:11 - P21 killed P22 using M16
+            23/04/2019 16:00:00 - Match 77777 has ended
+          LOG
+        end
+
+        it 'flags match as exceeded_player_limit' do
+          result = described_class.new(excess_log).parse
+          
+          match = Match.find_by(match_id: '77777')
+          expect(match.exceeded_player_limit).to be true
+          expect(result.value![:errors]).to include(/Match 77777 exceeded player limit: 22 players/)
+        end
+      end
+
+      context 'when match has 20 or fewer players' do
+        let(:valid_log) do
+          <<~LOG
+            23/04/2019 15:00:00 - New match 55555 has started
+            23/04/2019 15:00:01 - P1 killed P2 using M16
+            23/04/2019 16:00:00 - Match 55555 has ended
+          LOG
+        end
+
+        it 'does not flag match as exceeded_player_limit' do
+          result = described_class.new(valid_log).parse
+          
+          match = Match.find_by(match_id: '55555')
+          expect(match.exceeded_player_limit).to be false
+          expect(result.value!).not_to have_key(:errors)
+        end
+      end
+    end
   end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_07_123622) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_08_231642) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -46,6 +46,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_07_123622) do
     t.datetime "ended_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "exceeded_player_limit", default: false, null: false
+    t.index ["exceeded_player_limit"], name: "index_matches_on_exceeded_player_limit"
     t.index ["match_id"], name: "index_matches_on_match_id", unique: true
   end
 

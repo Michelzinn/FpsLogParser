@@ -1,6 +1,8 @@
 class LogParser
   include Dry::Monads[:result]
 
+  MAX_PLAYERS_PER_MATCH = 20
+
   attr_reader :content
 
   def initialize(content)
@@ -74,7 +76,15 @@ class LogParser
   def handle_match_end(match_id, timestamp)
     return if @current_match.blank? || @current_match.match_id != match_id
 
-    @current_match.update(ended_at: timestamp)
+    player_count = @current_match.players.count
+
+    if player_count > MAX_PLAYERS_PER_MATCH
+      @current_match.update(ended_at: timestamp, exceeded_player_limit: true)
+      @errors << "Match #{match_id} exceeded player limit: #{player_count} players (max #{MAX_PLAYERS_PER_MATCH})"
+    else
+      @current_match.update(ended_at: timestamp)
+    end
+
     @current_match = nil
   end
 
