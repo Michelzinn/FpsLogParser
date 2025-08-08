@@ -67,3 +67,5 @@ group :development do
 end
 
 gem "view_component", "~> 4.0"
+
+gem "rails-controller-testing", "~> 1.0", :group => :test
