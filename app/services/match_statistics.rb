@@ -60,6 +60,19 @@ class MatchStatistics
       .count
   end
 
+  def winner_favorite_weapon
+    return nil if winner.blank?
+
+    weapon_counts = match.kills
+      .where(killer: winner, world_kill: false)
+      .group(:weapon)
+      .count
+
+    return nil if weapon_counts.empty?
+
+    weapon_counts.max_by { |_, count| count }&.first
+  end
+
   def kill_feed
     match.kills.includes(:killer, :victim).order(:occurred_at).map do |kill|
       {

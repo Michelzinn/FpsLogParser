@@ -128,4 +128,31 @@ RSpec.describe MatchStatistics do
       expect(world_kill[:killer]).to eq('WORLD')
     end
   end
+
+  describe '#winner_favorite_weapon' do
+    it 'returns the most used weapon by the winner' do
+      expect(statistics.winner_favorite_weapon).to eq('M16')
+    end
+
+    it 'returns nil if there is no winner' do
+      allow(match).to receive(:winner).and_return(nil)
+      expect(statistics.winner_favorite_weapon).to be_nil
+    end
+
+    it 'returns nil if winner has no kills' do
+      match_with_no_kills = create(:match)
+      winner_with_no_kills = create(:player, name: 'NoKills')
+      create(:match_player, match: match_with_no_kills, player: winner_with_no_kills, kills_count: 0)
+
+      stats = described_class.new(match_with_no_kills)
+      allow(match_with_no_kills).to receive(:winner).and_return(winner_with_no_kills)
+
+      expect(stats.winner_favorite_weapon).to be_nil
+    end
+
+    it 'excludes world kills from weapon count' do
+      10.times { create(:kill, :world_kill, match: match, victim: player2, weapon: 'FALL') }
+      expect(statistics.winner_favorite_weapon).to eq('M16')
+    end
+  end
 end
