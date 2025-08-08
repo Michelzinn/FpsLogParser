@@ -1,0 +1,85 @@
+<div class="min-h-screen p-4">
+  <div class="max-w-6xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">Global Player Rankings</h1>
+    
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title text-2xl mb-4">All-Time Leaderboard</h2>
+        
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Player</th>
+                <th>Total Kills</th>
+                <th>Total Deaths</th>
+                <th>K/D Ratio</th>
+                <th>Matches Played</th>
+                <th>Win Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @rankings.each_with_index do |player_stat, index| %>
+                <tr class="<%= index == 0 ? 'bg-success/10' : '' %>">
+                  <td>
+                    <% if index == 0 %>
+                      <span class="badge" style="background-color: #FFD700; color: #000;">1st</span>
+                    <% elsif index == 1 %>
+                      <span class="badge" style="background-color: #C0C0C0; color: #000;">2nd</span>
+                    <% elsif index == 2 %>
+                      <span class="badge" style="background-color: #CD7F32; color: #FFF;">3rd</span>
+                    <% else %>
+                      <%= index + 1 %>
+                    <% end %>
+                  </td>
+                  <td class="font-semibold"><%= player_stat[:name] %></td>
+                  <td><%= player_stat[:total_kills] %></td>
+                  <td><%= player_stat[:total_deaths] %></td>
+                  <td>
+                    <span class="badge <%= player_stat[:kd_ratio] >= 1 ? 'badge-success' : 'badge-error' %>">
+                      <%= player_stat[:kd_ratio].round(2) %>
+                    </span>
+                  </td>
+                  <td><%= player_stat[:matches_played] %></td>
+                  <td>
+                    <span class="badge badge-info">
+                      <%= (player_stat[:win_rate] * 100).round(1) %>%
+                    </span>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+        
+        <% if @rankings.empty? %>
+          <div class="text-center py-8">
+            <p class="text-gray-500">No players found</p>
+            <p class="text-gray-400 mt-2">Upload a log file to start tracking statistics</p>
+            <%= link_to "Upload a Log", uploads_path, class: "btn btn-primary mt-4" %>
+          </div>
+        <% end %>
+        
+        <div class="divider mt-8"></div>
+        
+        <div class="stats shadow bg-base-200 w-full">
+          <div class="stat">
+            <div class="stat-title">Total Players</div>
+            <div class="stat-value"><%= @rankings.size %></div>
+          </div>
+          
+          <div class="stat">
+            <div class="stat-title">Total Matches</div>
+            <div class="stat-value"><%= Match.count %></div>
+          </div>
+          
+          <div class="stat">
+            <div class="stat-title">Total Kills</div>
+            <div class="stat-value"><%= Kill.where(world_kill: false).count %></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
