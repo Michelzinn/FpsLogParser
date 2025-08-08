@@ -10,11 +10,11 @@ class Player < ApplicationRecord
   validates :name, presence: true, uniqueness: { case_sensitive: false }
 
   def total_kills
-    match_players.sum(:kills_count)
+    match_players.joins(:match).where(matches: { exceeded_player_limit: false }).sum(:kills_count)
   end
 
   def total_deaths
-    match_players.sum(:deaths_count)
+    match_players.joins(:match).where(matches: { exceeded_player_limit: false }).sum(:deaths_count)
   end
 
   def kd_ratio
@@ -23,6 +23,6 @@ class Player < ApplicationRecord
   end
 
   def matches_won
-    matches.select { |match| match.winner == self }.count
+    matches.where(exceeded_player_limit: false).select { |match| match.winner == self }.count
   end
 end

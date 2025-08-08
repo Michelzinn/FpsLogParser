@@ -7,6 +7,7 @@ class Match < ApplicationRecord
   validates :started_at, presence: true
 
   scope :ordered, -> { order(started_at: :desc) }
+  scope :valid_matches, -> { where(exceeded_player_limit: false) }
 
   def duration
     return nil if ended_at.blank?

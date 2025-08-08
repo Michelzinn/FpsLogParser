@@ -234,7 +234,7 @@ RSpec.describe LogParser do
 
         it 'flags match as exceeded_player_limit' do
           result = described_class.new(excess_log).parse
-          
+
           match = Match.find_by(match_id: '77777')
           expect(match.exceeded_player_limit).to be true
           expect(result.value![:errors]).to include(/Match 77777 exceeded player limit: 22 players/)
@@ -252,7 +252,7 @@ RSpec.describe LogParser do
 
         it 'does not flag match as exceeded_player_limit' do
           result = described_class.new(valid_log).parse
-          
+
           match = Match.find_by(match_id: '55555')
           expect(match.exceeded_player_limit).to be false
           expect(result.value!).not_to have_key(:errors)

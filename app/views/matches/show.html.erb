@@ -9,7 +9,18 @@
 
     <div class="card bg-base-100 shadow-xl mb-6">
       <div class="card-body">
-        <h1 class="card-title text-3xl">Match <%= @match.match_id %></h1>
+        <h1 class="card-title text-3xl">
+          Match <%= @match.match_id %>
+          <% if @match.exceeded_player_limit %>
+            <span class="badge badge-error">Invalid - Exceeded Player Limit</span>
+          <% end %>
+        </h1>
+        
+        <% if @match.exceeded_player_limit %>
+          <div class="alert alert-warning mt-4">
+            <span>⚠️ This match exceeded the 20 player limit and is not counted in global statistics.</span>
+          </div>
+        <% end %>
         
         <div class="stats shadow bg-base-200">
           <div class="stat">
