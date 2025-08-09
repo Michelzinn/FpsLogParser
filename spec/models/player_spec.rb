@@ -74,26 +74,4 @@ RSpec.describe Player, type: :model do
     end
   end
 
-  describe '#matches_won' do
-    let(:player) { create(:player) }
-    let(:other_player) { create(:player) }
-    let(:match1) { create(:match) }
-    let(:match2) { create(:match) }
-    let(:match3) { create(:match) }
-
-    before do
-      create(:match_player, player: player, match: match1, kills_count: 10)
-      create(:match_player, player: other_player, match: match1, kills_count: 5)
-      
-      create(:match_player, player: player, match: match2, kills_count: 3)
-      create(:match_player, player: other_player, match: match2, kills_count: 7)
-      
-      create(:match_player, player: player, match: match3, kills_count: 15)
-      create(:match_player, player: other_player, match: match3, kills_count: 2)
-    end
-
-    it 'returns count of matches won' do
-      expect(player.matches_won).to eq(2)
-    end
-  end
 end

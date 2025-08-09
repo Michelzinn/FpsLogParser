@@ -21,8 +21,4 @@ class Player < ApplicationRecord
     return total_kills.to_f if total_deaths.zero?
     total_kills.to_f / total_deaths
   end
-
-  def matches_won
-    matches.where(exceeded_player_limit: false).select { |match| match.winner == self }.count
-  end
 end

@@ -1,18 +1,20 @@
 class GlobalStatistics
   def global_rankings
-    Player.includes(:match_players, :matches).map do |player|
-      matches_played = player.matches.count
-      matches_won = player.matches_won
+    Player.includes(match_players: :match).map do |player|
+      valid_match_players = player.match_players.joins(:match).where(matches: { exceeded_player_limit: false })
+
+      matches_played = valid_match_players.count
+      total_kills = valid_match_players.sum(:kills_count)
+      total_deaths = valid_match_players.sum(:deaths_count)
+      kd_ratio = total_deaths > 0 ? (total_kills.to_f / total_deaths) : total_kills.to_f
 
       {
         player: player,
         name: player.name,
-        total_kills: player.total_kills,
-        total_deaths: player.total_deaths,
-        kd_ratio: player.kd_ratio.round(2),
-        matches_played: matches_played,
-        matches_won: matches_won,
-        win_rate: matches_played > 0 ? (matches_won.to_f / matches_played) : 0.0
+        total_kills: total_kills,
+        total_deaths: total_deaths,
+        kd_ratio: kd_ratio.round(2),
+        matches_played: matches_played
       }
     end.sort_by { |stat| -stat[:total_kills] }
   end
@@ -22,13 +24,13 @@ class GlobalStatistics
   end
 
   def player_stats(player)
+    valid_matches_count = player.matches.where(exceeded_player_limit: false).count
     {
       player: player,
       total_kills: player.total_kills,
       total_deaths: player.total_deaths,
       kd_ratio: player.kd_ratio.round(2),
-      matches_played: player.matches.count,
-      matches_won: player.matches_won,
+      matches_played: valid_matches_count,
       average_kills_per_match: average_stat(player, :kills_count),
       average_deaths_per_match: average_stat(player, :deaths_count),
       match_history: player_match_history(player)
@@ -45,7 +47,7 @@ class GlobalStatistics
   end
 
   def total_matches
-    Match.count
+    Match.where(exceeded_player_limit: false).count
   end
 
   def total_players
@@ -53,11 +55,11 @@ class GlobalStatistics
   end
 
   def total_kills
-    MatchPlayer.sum(:kills_count)
+    MatchPlayer.joins(:match).where(matches: { exceeded_player_limit: false }).sum(:kills_count)
   end
 
   def total_deaths
-    MatchPlayer.sum(:deaths_count)
+    MatchPlayer.joins(:match).where(matches: { exceeded_player_limit: false }).sum(:deaths_count)
   end
 
   def summary
@@ -75,23 +77,23 @@ class GlobalStatistics
   private
 
   def average_stat(player, stat)
-    return 0.0 if player.match_players.empty?
+    valid_match_players = player.match_players.joins(:match).where(matches: { exceeded_player_limit: false })
+    return 0.0 if valid_match_players.empty?
 
-    total = player.match_players.sum(stat)
-    count = player.match_players.count
+    total = valid_match_players.sum(stat)
+    count = valid_match_players.count
     (total.to_f / count).round(2)
   end
 
   def player_match_history(player)
-    player.match_players.includes(:match).map do |mp|
+    player.match_players.joins(:match).where(matches: { exceeded_player_limit: false }).includes(:match).map do |mp|
       {
         match_id: mp.match.match_id,
         started_at: mp.match.started_at,
         kills: mp.kills_count,
         deaths: mp.deaths_count,
         score: mp.score,
-        kd_ratio: mp.kd_ratio.round(2),
-        won: mp.match.winner == player
+        kd_ratio: mp.kd_ratio.round(2)
       }
     end
   end

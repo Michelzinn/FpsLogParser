@@ -4,23 +4,39 @@ RSpec.describe GlobalStatistics do
   let!(:player1) { create(:player, name: 'Roman') }
   let!(:player2) { create(:player, name: 'Nick') }
   let!(:player3) { create(:player, name: 'Marcus') }
+  let!(:player4) { create(:player, name: 'John') }
 
   let!(:match1) { create(:match) }
   let!(:match2) { create(:match) }
+  let!(:invalid_match) { create(:match, exceeded_player_limit: true) }
 
   before do
-    # match 1 stats
     create(:match_player, match: match1, player: player1, kills_count: 10, deaths_count: 2)
     create(:match_player, match: match1, player: player2, kills_count: 5, deaths_count: 8)
 
-    # match 2 stats
     create(:match_player, match: match2, player: player1, kills_count: 7, deaths_count: 3)
     create(:match_player, match: match2, player: player3, kills_count: 12, deaths_count: 1)
+
+    create(:match_player, match: invalid_match, player: player1, kills_count: 20, deaths_count: 0)
+    create(:match_player, match: invalid_match, player: player4, kills_count: 15, deaths_count: 5)
   end
 
   subject(:statistics) { described_class.new }
 
   describe '#global_rankings' do
+    it 'excludes invalid matches from statistics' do
+      rankings = statistics.global_rankings
+      roman = rankings.find { |r| r[:name] == 'Roman' }
+      expect(roman[:total_kills]).to eq(17)
+      expect(roman[:total_deaths]).to eq(5)
+      expect(roman[:matches_played]).to eq(2)
+
+      john = rankings.find { |r| r[:name] == 'John' }
+      expect(john[:total_kills]).to eq(0)
+      expect(john[:total_deaths]).to eq(0)
+      expect(john[:matches_played]).to eq(0)
+    end
+
     it 'returns players ordered by total kills' do
       rankings = statistics.global_rankings
 
@@ -37,30 +53,19 @@ RSpec.describe GlobalStatistics do
       expect(roman[:kd_ratio]).to eq(3.4)
     end
 
-    it 'includes matches won and win rate' do
-      rankings = statistics.global_rankings
-      roman = rankings.find { |r| r[:name] == 'Roman' }
-      marcus = rankings.find { |r| r[:name] == 'Marcus' }
-
-      expect(roman[:matches_won]).to eq(1)
-      expect(roman[:win_rate]).to eq(0.5)
-
-      expect(marcus[:matches_won]).to eq(1)
-      expect(marcus[:win_rate]).to eq(1.0)
-    end
-
     it 'handles players with no matches' do
       create(:player, name: 'NewPlayer')
       rankings = statistics.global_rankings
       new_player = rankings.find { |r| r[:name] == 'NewPlayer' }
 
-      expect(new_player[:win_rate]).to eq(0.0)
       expect(new_player[:matches_played]).to eq(0)
+      expect(new_player[:total_kills]).to eq(0)
+      expect(new_player[:total_deaths]).to eq(0)
     end
 
     it 'includes all players' do
       rankings = statistics.global_rankings
-      expect(rankings.size).to eq(3)
+      expect(rankings.size).to eq(4)
     end
   end
 
@@ -87,7 +92,7 @@ RSpec.describe GlobalStatistics do
       expect(stats[:average_deaths_per_match]).to eq(2.5)
     end
 
-    it 'includes match history' do
+    it 'includes match history without won field' do
       stats = statistics.player_stats(player1)
 
       expect(stats[:match_history]).to be_an(Array)
@@ -96,8 +101,10 @@ RSpec.describe GlobalStatistics do
         :match_id,
         :kills,
         :deaths,
-        :score
+        :score,
+        :kd_ratio
       )
+      expect(stats[:match_history].first).not_to have_key(:won)
     end
   end
 
@@ -125,24 +132,36 @@ RSpec.describe GlobalStatistics do
   end
 
   describe '#total_matches' do
-    it 'returns total number of matches' do
+    it 'returns total number of valid matches only' do
       expect(statistics.total_matches).to eq(2)
     end
   end
 
   describe '#total_players' do
     it 'returns total number of unique players' do
-      expect(statistics.total_players).to eq(3)
+      expect(statistics.total_players).to eq(4)
+    end
+  end
+
+  describe '#total_kills' do
+    it 'excludes kills from invalid matches' do
+      expect(statistics.total_kills).to eq(34)
+    end
+  end
+
+  describe '#total_deaths' do
+    it 'excludes deaths from invalid matches' do
+      expect(statistics.total_deaths).to eq(14)
     end
   end
 
   describe '#summary' do
-    it 'returns complete global statistics' do
+    it 'returns complete global statistics excluding invalid matches' do
       summary = statistics.summary
 
       expect(summary).to include(
         total_matches: 2,
-        total_players: 3,
+        total_players: 4,
         total_kills: 34,
         total_deaths: 14
       )

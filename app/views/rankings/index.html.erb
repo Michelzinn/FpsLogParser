@@ -16,7 +16,6 @@
                 <th>Total Deaths</th>
                 <th>K/D Ratio</th>
                 <th>Matches Played</th>
-                <th>Win Rate</th>
               </tr>
             </thead>
             <tbody>
@@ -42,11 +41,6 @@
                     </span>
                   </td>
                   <td><%= player_stat[:matches_played] %></td>
-                  <td>
-                    <span class="badge badge-info">
-                      <%= (player_stat[:win_rate] * 100).round(1) %>%
-                    </span>
-                  </td>
                 </tr>
               <% end %>
             </tbody>
