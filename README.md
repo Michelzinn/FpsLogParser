@@ -4,7 +4,7 @@ Sistema de análise de logs de partidas de FPS (First Person Shooter) desenvolvi
 
 ## Melhorias Futuras (TODO LIST)
 
-- Extrair lógica de cada tipo de event handlers para micro cases separados
+- Extrair lógica de cada tipo de event handlers para micro cases separado, criando uma espécie de factory que decide para qual event handler mandar
 - Tratar caso de borda em que um mesmo arquivo é enviado novamente, contando kills para uma partida já iniciada e terminada
 - Ver a possibilidade de melhorar as queries de estatísticas
 - Adicionar paginação nas views das tabelas
