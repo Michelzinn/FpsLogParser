@@ -45,12 +45,12 @@ class LogParser
     when /<WORLD> killed (.+) by (.+)/
       victim = $1
       weapon = $2
-      handle_world_kill(victim, weapon, timestamp)
+      handle_kill(nil, victim, weapon, timestamp, world_kill: true)
     when /(.+) killed (.+) using (.+)/
       killer = $1
       victim = $2
       weapon = $3
-      handle_player_kill(killer, victim, weapon, timestamp)
+      handle_kill(killer, victim, weapon, timestamp)
     else
       @errors << "Unknown event format: #{line}"
     end
@@ -88,39 +88,15 @@ class LogParser
     @current_match = nil
   end
 
-  def handle_world_kill(victim_name, weapon, timestamp)
+  def handle_kill(killer_name, victim_name, weapon, timestamp, world_kill: false)
     return if @current_match.blank?
 
     victim = find_or_create_player(victim_name)
+    killer = world_kill ? nil : find_or_create_player(killer_name)
 
-    Kill.create!(
-      match: @current_match,
-      killer: nil,
-      victim: victim,
-      weapon: weapon,
-      occurred_at: timestamp,
-      world_kill: true
-    )
+    Kill.create!(match: @current_match, killer:, victim:, weapon:, occurred_at: timestamp, world_kill:)
 
-    update_player_stats(victim, :death)
-  end
-
-  def handle_player_kill(killer_name, victim_name, weapon, timestamp)
-    return if @current_match.blank?
-
-    killer = find_or_create_player(killer_name)
-    victim = find_or_create_player(victim_name)
-
-    Kill.create!(
-      match: @current_match,
-      killer: killer,
-      victim: victim,
-      weapon: weapon,
-      occurred_at: timestamp,
-      world_kill: false
-    )
-
-    update_player_stats(killer, :kill)
+    update_player_stats(killer, :kill) if killer.present?
     update_player_stats(victim, :death)
   end
 
