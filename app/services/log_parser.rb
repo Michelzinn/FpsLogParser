@@ -77,11 +77,13 @@ class LogParser
     return if @current_match.blank? || @current_match.match_id != match_id
 
     player_count = @current_match.players.count
+    invalid_match = player_count > MAX_PLAYERS_PER_MATCH
 
-    if player_count > MAX_PLAYERS_PER_MATCH
+    if invalid_match
       @current_match.update(ended_at: timestamp, exceeded_player_limit: true)
       @errors << "Match #{match_id} exceeded player limit: #{player_count} players (max #{MAX_PLAYERS_PER_MATCH})"
     else
+      assign_awards
       @current_match.update(ended_at: timestamp)
     end
 
@@ -119,5 +121,18 @@ class LogParser
     when :death
       match_player.increment!(:deaths_count)
     end
+  end
+
+  def assign_awards
+    return if @current_match.blank?
+
+    winner = @current_match.match_players.max_by { |player| player.score }
+    return if winner.blank?
+
+    awards = []
+
+    awards << "Deathless Victory" if winner.deaths_count == 0
+
+    winner.update(awards:) if awards.any?
   end
 end

@@ -260,4 +260,61 @@ RSpec.describe LogParser do
       end
     end
   end
+
+  describe 'awards calculation' do
+    context 'deathless victory award' do
+      let(:log_content) do
+        <<~LOG
+          23/04/2019 15:34:22 - New match 99999 has started
+          23/04/2019 15:36:04 - P1 killed P2 using M16
+          23/04/2019 15:36:04 - P1 killed P2 using M16
+          23/04/2019 15:36:04 - P1 killed P2 using M16
+          23/04/2019 15:36:33 - P1 killed P3 using AK47
+          23/04/2019 15:37:00 - P2 killed P3 using M16
+          23/04/2019 15:39:22 - Match 99999 has ended
+        LOG
+      end
+
+      it 'awards deathless victory only to the winner who has no deaths' do
+        described_class.new(log_content).parse
+
+        match = Match.find_by(match_id: '99999')
+        p1 = Player.find_by(name: 'P1')
+        p2 = Player.find_by(name: 'P2')
+        p3 = Player.find_by(name: 'P3')
+
+        p1_stats = MatchPlayer.find_by(match: match, player: p1)
+        expect(p1_stats.awards).to include('Deathless Victory')
+
+        p2_stats = MatchPlayer.find_by(match: match, player: p2)
+        expect(p2_stats.awards).to be_empty
+
+        p3_stats = MatchPlayer.find_by(match: match, player: p3)
+        expect(p3_stats.awards).to be_empty
+      end
+    end
+
+    context 'winner with deaths does not get deathless victory' do
+      let(:log_content) do
+        <<~LOG
+          23/04/2019 15:00:00 - New match 88888 has started
+          23/04/2019 15:00:10 - P1 killed P2 using M16
+          23/04/2019 15:00:20 - P1 killed P2 using M16
+          23/04/2019 15:00:30 - P1 killed P2 using M16
+          23/04/2019 15:00:40 - P2 killed P1 using AK47
+          23/04/2019 16:00:00 - Match 88888 has ended
+        LOG
+      end
+
+      it 'does not award deathless victory to winner who died' do
+        described_class.new(log_content).parse
+
+        match = Match.find_by(match_id: '88888')
+        p1 = Player.find_by(name: 'P1')
+
+        p1_stats = MatchPlayer.find_by(match: match, player: p1)
+        expect(p1_stats.awards).to be_empty
+      end
+    end
+  end
 end
