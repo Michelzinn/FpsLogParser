@@ -107,6 +107,7 @@ class LogParser
   def update_player_stats(player, event_type)
     return if @current_match.blank?
 
+    # caches it in @match_players to avoid multiple DB calls
     match_player = @match_players[player.id] ||= MatchPlayer.find_or_create_by(
       match: @current_match,
       player: player
