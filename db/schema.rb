@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_08_231642) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_10_031746) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -35,6 +35,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_08_231642) do
     t.integer "deaths_count", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "awards", default: [], array: true
     t.index ["match_id", "player_id"], name: "index_match_players_on_match_id_and_player_id", unique: true
     t.index ["match_id"], name: "index_match_players_on_match_id"
     t.index ["player_id"], name: "index_match_players_on_player_id"

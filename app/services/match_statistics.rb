@@ -13,7 +13,8 @@ class MatchStatistics
         kills: mp.kills_count,
         deaths: mp.deaths_count,
         score: mp.score,
-        kd_ratio: mp.kd_ratio
+        kd_ratio: mp.kd_ratio,
+        awards: mp.awards || []
       }
     end
   end

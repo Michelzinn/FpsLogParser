@@ -69,6 +69,7 @@
                 <th>Deaths</th>
                 <th>Score</th>
                 <th>K/D Ratio</th>
+                <th>Awards</th>
               </tr>
             </thead>
             <tbody>
@@ -93,6 +94,15 @@
                     <span class="badge <%= player_stat[:kd_ratio] >= 1 ? 'badge-success' : 'badge-error' %>">
                       <%= player_stat[:kd_ratio].round(2) %>
                     </span>
+                  </td>
+                  <td>
+                    <% if player_stat[:awards].present? %>
+                      <% player_stat[:awards].each do |award| %>
+                        <span class="badge badge-accent">🏆 <%= award %></span>
+                      <% end %>
+                    <% else %>
+                      <span class="text-gray-400">-</span>
+                    <% end %>
                   </td>
                 </tr>
               <% end %>
