@@ -1,53 +1,52 @@
 <div class="min-h-screen p-4">
   <div class="max-w-6xl mx-auto">
     <h1 class="text-3xl font-bold mb-6">All Matches</h1>
-    
-    <div class="overflow-x-auto">
-      <table class="table bg-base-100">
-        <thead>
-          <tr>
-            <th>Match ID</th>
-            <th>Started At</th>
-            <th>Duration</th>
-            <th>Players</th>
-            <th>Winner</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @matches.each do |match| %>
-            <tr class="hover <%= 'bg-error/10' if match.exceeded_player_limit %>">
-              <td>
-                <%= match.match_id %>
-                <% if match.exceeded_player_limit %>
-                  <span class="badge badge-error badge-sm">Invalid</span>
-                <% end %>
-              </td>
-              <td><%= match.started_at.strftime("%d-%m-%Y %H:%M") %></td>
-              <td><%= match.duration ? "#{match.duration / 60} min" : "In Progress" %></td>
-              <td>
-                <%= match.players.count %>
-                <% if match.exceeded_player_limit %>
-                  <span class="text-error text-xs">(limit: 20)</span>
-                <% end %>
-              </td>
-              <td>
-                <% if match.winner %>
-                  <span class="badge badge-success"><%= match.winner.name %></span>
-                <% else %>
-                  <span class="badge">No winner</span>
-                <% end %>
-              </td>
-              <td>
-                <%= link_to "View Details", match_path(match), class: "btn btn-sm btn-primary" %>
-              </td>
+    <% if @matches.any? %>
+      <div class="overflow-x-auto">
+        <table class="table bg-base-100">
+          <thead>
+            <tr>
+              <th>Match ID</th>
+              <th>Started At</th>
+              <th>Duration</th>
+              <th>Players</th>
+              <th>Winner</th>
+              <th>Actions</th>
             </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-    
-    <% if @matches.empty? %>
+          </thead>
+          <tbody>
+            <% @matches.each do |match| %>
+              <tr class="hover <%= 'bg-error/10' if match.exceeded_player_limit %>">
+                <td>
+                  <%= match.match_id %>
+                  <% if match.exceeded_player_limit %>
+                    <span class="badge badge-error badge-sm">Invalid</span>
+                  <% end %>
+                </td>
+                <td><%= match.started_at.strftime("%d-%m-%Y %H:%M") %></td>
+                <td><%= match.duration ? "#{match.duration / 60} min" : "In Progress" %></td>
+                <td>
+                  <%= match.players.count %>
+                  <% if match.exceeded_player_limit %>
+                    <span class="text-error text-xs">(limit: 20)</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if match.winner %>
+                    <span class="badge badge-success"><%= match.winner.name %></span>
+                  <% else %>
+                    <span class="badge">No winner</span>
+                  <% end %>
+                </td>
+                <td>
+                  <%= link_to "View Details", match_path(match), class: "btn btn-sm btn-primary" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else%>
       <div class="card bg-base-100 shadow-xl">
         <div class="card-body text-center">
           <h2 class="card-title justify-center">No matches found</h2>
