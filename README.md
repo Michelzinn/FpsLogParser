@@ -2,9 +2,13 @@
 
 Sistema de análise de logs de partidas de FPS (First Person Shooter) desenvolvido em Ruby on Rails.
 
-## Descri��o
+## Melhorias Futuras (TODO LIST)
 
-O FPS Log Parser é uma aplicação web que processa arquivos de log de partidas de jogos FPS, extraindo estatísticas detalhadas sobre jogadores, kills, mortes e desempenho geral. O sistema identifica automaticamente partidas, jogadores e eventos de combate a partir da leitura de logs.
+- Extrair lógica de cada tipo de event handlers para micro cases separados
+- Tratar caso de borda em que um mesmo arquivo é enviado novamente, contando kills para uma partida já iniciada e terminada
+- Ver a possibilidade de melhorar as queries de estatísticas
+- Adicionar paginação nas views das tabelas
+- Criar mais componentes reutilizáveis para o sistema
 
 ## Funcionalidades
 
@@ -77,11 +81,11 @@ O parser espera logs no seguinte formato:
 - **Match**: Representa uma partida com início, fim e duração
 - **Player**: Jogador com estatísticas acumuladas
 - **Kill**: Evento de kill com killer, vítima e arma
-- **MatchPlayer**: Associação entre jogador e partida com estat�sticas
+- **MatchPlayer**: Associação entre jogador e partida com estatísticas individuais do jogador na partida
 
 ### Services
 - **LogParser**: Processa arquivos de log e popula o banco
-- **MatchStatistics**: Calcula estatíssticas de uma partida espec�fica
+- **MatchStatistics**: Calcula estatíssticas de uma partida específica
 - **GlobalStatistics**: Gera rankings e estatísticas globais
 
 ### Controllers
@@ -89,7 +93,7 @@ O parser espera logs no seguinte formato:
 - **MatchesController**: Exibe lista e detalhes de partidas
 - **RankingsController**: Mostra rankings globais
 
-## Regras de Neg�cio
+## Regras de Negócio
 
 - Partidas com mais de 20 jogadores são marcadas como inválidas
 - Partidas inválidas não contam para estatísticas globais
@@ -108,10 +112,4 @@ Para executar os testes:
 
 ```bash
 bundle exec rspec
-```
-
-Para verificar a cobertura de testes:
-
-```bash
-bundle exec rspec --format documentation
 ```
