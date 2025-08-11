@@ -166,10 +166,15 @@ RSpec.describe LogParser do
         end
       end
 
-      context 'with duplicate match IDs' do
-        it 'does not create duplicate matches' do
-          parser.parse
-          expect { parser.parse }.not_to change(Match, :count)
+      context 'with duplicate match IDs (parsing the same file twice)' do
+        it 'fails when trying to parse already completed matches' do
+          result = parser.parse
+          expect(result).to be_success
+
+          result2 = parser.parse
+          expect(result2).to be_failure
+          expect(result2.failure[:error]).to eq(:already_processed)
+          expect(result2.failure[:message]).to include('11348965')
         end
       end
     end

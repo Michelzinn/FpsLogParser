@@ -16,6 +16,7 @@ class LogParser
     return Failure(:empty_content) if content.blank?
 
     lines_processed = 0
+    @completed_matches_found = []
 
     content.each_line do |line|
       next if line.strip.empty?
@@ -25,6 +26,10 @@ class LogParser
     end
 
     return Failure(:no_valid_lines) if lines_processed == 0
+
+    if @completed_matches_found.any?
+      return Failure({ error: :already_processed, message: "Log contains already processed matches: #{@completed_matches_found.uniq.join(', ')}" })
+    end
 
     Success({ processed: lines_processed, errors: @errors.presence }.compact_blank)
   end
@@ -67,9 +72,16 @@ class LogParser
   end
 
   def handle_match_start(match_id, timestamp)
-    @current_match = Match.find_or_create_by(match_id: match_id) do |match|
-      match.started_at = timestamp
+    existing_match = Match.find_by(match_id: match_id)
+    already_completed = existing_match&.ended_at.present?
+
+    if already_completed
+      @completed_matches_found << match_id
+      @current_match = nil
+      return
     end
+
+    @current_match = existing_match || Match.create!(match_id: match_id, started_at: timestamp)
     @match_players = {}
   end
 
