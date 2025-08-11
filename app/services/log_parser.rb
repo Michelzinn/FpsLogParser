@@ -62,11 +62,11 @@ class LogParser
   end
 
   def extract_timestamp_and_event(line)
-    match = line.match(/^(\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}) - (.+)$/)
-    return nil if match.blank?
+    regex_match = line.match(/^(\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}:\d{2}) - (.+)$/)
+    return nil if regex_match.blank?
 
-    timestamp = DateTime.strptime(match[1], "%d/%m/%Y %H:%M:%S")
-    event = match[2]
+    timestamp = DateTime.strptime(regex_match[1], "%d/%m/%Y %H:%M:%S")
+    event = regex_match[2]
 
     [ timestamp, event ]
   end
