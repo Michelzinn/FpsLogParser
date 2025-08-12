@@ -39,6 +39,7 @@ Sistema de análise de logs de partidas de FPS (First Person Shooter) desenvolvi
 
 - Ruby 3.3.0
 - Rails 8.0.2
+- Turbo
 - PostgreSQL
 - RSpec (testes)
 - Tailwind CSS + DaisyUI
