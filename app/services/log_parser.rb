@@ -17,11 +17,13 @@ class LogParser
 
     lines_processed = 0
 
-    content.each_line do |line|
-      next if line.strip.empty?
+    ActiveRecord::Base.transaction do
+      content.each_line do |line|
+        next if line.strip.empty?
 
-      process_line(line.strip)
-      lines_processed += 1
+        process_line(line.strip)
+        lines_processed += 1
+      end
     end
 
     return Failure(:no_valid_lines) if lines_processed == 0
@@ -42,15 +44,15 @@ class LogParser
     when /Match (\d+) has ended/
       match_id = $1
       handle_match_end(match_id, timestamp)
-    when /<WORLD> killed (.+) by (.+)/
-      victim = $1
-      weapon = $2
-      handle_kill(nil, victim, weapon, timestamp, world_kill: true)
     when /(.+) killed (.+) using (.+)/
       killer = $1
       victim = $2
       weapon = $3
       handle_kill(killer, victim, weapon, timestamp)
+    when /<WORLD> killed (.+) by (.+)/
+      victim = $1
+      weapon = $2
+      handle_kill(nil, victim, weapon, timestamp, world_kill: true)
     else
       @errors << "Unknown event format: #{line}"
     end
@@ -100,17 +102,13 @@ class LogParser
   def handle_kill(killer_name, victim_name, weapon, timestamp, world_kill: false)
     return if @current_match.blank?
 
-    victim = find_or_create_player(victim_name)
-    killer = world_kill ? nil : find_or_create_player(killer_name)
+    victim = Player.find_or_create_by(name: victim_name.strip)
+    killer = world_kill ? nil : Player.find_or_create_by(name: killer_name.strip)
 
     Kill.create!(match: @current_match, killer:, victim:, weapon:, occurred_at: timestamp, world_kill:)
 
     update_player_stats(killer, :kill) if killer.present?
     update_player_stats(victim, :death)
-  end
-
-  def find_or_create_player(name)
-    Player.find_or_create_by(name: name.strip) # remove whitespaces in case regex parses weird names
   end
 
   def update_player_stats(player, event_type)
