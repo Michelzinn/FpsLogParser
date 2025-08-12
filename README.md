@@ -4,11 +4,21 @@ Sistema de análise de logs de partidas de FPS (First Person Shooter) desenvolvi
 
 ## Melhorias Futuras (TODO LIST)
 
-- Extrair lógica de cada tipo de event handlers para micro cases separado, criando uma espécie de factory que decide para qual event handler mandar
-- Tratar caso de borda em que um mesmo arquivo é enviado novamente, contando kills para uma partida já iniciada e terminada
+- Extrair lógica de cada tipo de event handlers para micro cases separados, criando uma espécie de factory que decide para qual event handler (case) mandar
+- ~~Tratar caso de borda em que um mesmo arquivo é enviado novamente, contando kills para uma partida já iniciada e terminada~~
 - Ver a possibilidade de melhorar as queries de estatísticas
 - Adicionar paginação nas views das tabelas
 - Criar mais componentes reutilizáveis para o sistema
+
+## Bonus implementados
+- Descobrir arma preferia do vencedor
+- Jogadores que vencerem uma partida sem morrer devem ganhar um award
+- Ranking Global
+
+## Bonus futuros a serem implementados
+- Identificar maior sequência de frag
+- Jogadores que matarem 5 vezes em 1 minuto devem ganhar um award
+- Permitir que os jogadores sejam classificados em times, Lógica de teamkill penalizando pontos.
 
 ## Funcionalidades
 
@@ -99,17 +109,3 @@ O parser espera logs no seguinte formato:
 - Partidas inválidas não contam para estatísticas globais
 - Mortes causadas pelo mundo (<WORLD>) contam como morte mas nãoo como kill
 - K/D ratio � calculado como kills/deaths (ou kills se deaths = 0)
-
-## Desenvolvimento
-
-Para executar em modo de desenvolvimento:
-
-```bash
-rails server
-```
-
-Para executar os testes:
-
-```bash
-bundle exec rspec
-```
