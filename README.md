@@ -9,6 +9,8 @@ Sistema de análise de logs de partidas de FPS (First Person Shooter) desenvolvi
 - Ver a possibilidade de melhorar as queries de estatísticas
 - Adicionar paginação nas views das tabelas
 - Criar mais componentes reutilizáveis para o sistema
+- Melhorar o método update_player_stats para usar uma maneira diferente de increment! 
+- Uma ideia é realizar uma contagem durante o parse das kills, armazenar em um hash tipo: { player_name: final_number_of_kills, player2_name: final_number_of_kills } e fazer um update em cada matchplayer invés de um increment que da um update com cada kill
 
 ## Bonus implementados
 - Descobrir arma preferia do vencedor
