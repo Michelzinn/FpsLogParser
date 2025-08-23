@@ -1,6 +1,10 @@
 # FPS Log Parser
 
 Sistema de análise de logs de partidas de FPS (First Person Shooter) desenvolvido em Ruby on Rails.
+<img width="1848" height="879" alt="firefox_AzyRGfaAOH" src="https://github.com/user-attachments/assets/ad2d7063-f85b-4b75-bcf7-033bb493dacf" />
+<img width="1852" height="902" alt="firefox_4ciWFqJcj4" src="https://github.com/user-attachments/assets/7a502b94-d25f-4bb0-97b0-fb82cbb7d616" />
+<img width="1865" height="915" alt="firefox_0fdA81FRiX" src="https://github.com/user-attachments/assets/cdb7019a-9bf2-4199-bd9f-d16a1a571609" />
+
 
 ## Melhorias Futuras (TODO LIST)
 
