@@ -69,6 +69,6 @@ group :development do
   gem "web-console"
 end
 
-gem "view_component", "~> 4.0"
+gem "view_component", "~> 4.1"
 
 gem "rails-controller-testing", "~> 1.0", group: :test
